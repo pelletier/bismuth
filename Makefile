@@ -13,4 +13,4 @@ boot:
 	cd ebin; $(ERL) -pa ./ebin/ -noshell -run make_boot write_scripts bismuth
 
 start: bismuth
-	$(ERL) -pa ./ebin -pa ./deps/*/ebin -name bismuth -s reloader -name MacBookPro-Thomas.local
+	$(ERL) -pa ./ebin -pa ./deps/*/ebin -name bismuth -s reloader -sname bismuth@MacBookPro-Thomas

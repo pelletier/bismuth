@@ -6,7 +6,12 @@
 -record(state, {}).
 -define(SERVER, ?MODULE). % For coherence.
 -define(LOOP, {?MODULE, loop}).
+-define(DEFAULT_VHOST, <<"/">>).
 
+%
+% URI
+% /[vhost]/
+%
 
 start_link(Args) ->
 	io:format("Rest server start_linkd~n"),
@@ -21,11 +26,27 @@ init(_Args) ->
 % Dispatching HTTP requests
 loop(Req) ->
 	Path = Req:get(path),
+	Tokens = string:tokens(Path, "/"),
 	io:format("restarting loop normally in ~p~n", [Path]),
-	case string:tokens(Path, "/") of
+	Size = length(Tokens),
+	io:format("size = ~p~n", [Size]),
+	if
+		Size>1 ->
+			% A vhost name has been provided
+			io:format("> 1~n"),
+			[<<Vhost>>|Command] = Tokens;
+		true ->
+			io:format("1~n"),
+			% Use the default instead
+			Vhost = ?DEFAULT_VHOST,
+			Command = Tokens
+	end,
+	io:format("Endif~n"),
+	
+	case Tokens of
 		["queues" | RestOfPath] ->
 			ok(Req, "/queues"),
-			R = bismuth_rabbit:rpc_call(rabbit_amqqueue, info_all, ['novasniff.new']),
+			R = bismuth_rabbit:rpc_call(rabbit_amqqueue, info_all, [Vhost]),
 			io:format("Returns of rpc_call: ~p~n", [R]);
 		_ ->
 			ok(Req, "other")
