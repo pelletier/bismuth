@@ -1,5 +1,15 @@
 -module(bismuth_utils).
--export([normalize/1, normalize/2, contains/2]).
+-export([normalize/1, normalize/2, contains/2, as_dict/2]).
+
+
+% Index a list of list of pairs (key, value) on the given key.
+as_dict([], _Key) ->
+	[];
+as_dict([Item|List], Key)->
+ 	{ok, Value} = bismuth_config:in_get(Key, Item),
+	io:format("VALUE ~p~n", [Value]),
+	lists:append([{list_to_atom(binary_to_list(Value)), Item}], as_dict(List, Key)).
+	
 
 % Check if any key in the first list exists in the second one.
 contains([], _List) ->

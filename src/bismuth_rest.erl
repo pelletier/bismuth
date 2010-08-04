@@ -12,7 +12,7 @@
 %
 % URI
 % /[vhost]/
-%
+%		  /queues/ -> List the queues and give their details.
 
 start_link(Args) ->
 	io:format("Rest server start_linkd~n"),
@@ -31,25 +31,21 @@ loop(Req) ->
 	Tokens = string:tokens(Path, "/"),
 	io:format("restarting loop normally in ~p~n", [Path]),
 	Size = length(Tokens),
-	io:format("size = ~p~n", [Size]),
 	if
 		Size>1 ->
 			% A vhost name has been provided
-			io:format("> 1~n"),
 			[<<Vhost>>|Command] = Tokens;
 		true ->
-			io:format("1~n"),
 			% Use the default instead
 			Vhost = ?DEFAULT_VHOST,
 			Command = Tokens
 	end,
-	io:format("Endif~n"),
 	
 	case Tokens of
 		[ViewName | RestOfPath] ->
 			apply(bismuth_views, list_to_atom(ViewName), [Req, Vhost, RestOfPath]);
 		_ ->
-			ok(Req, "other")
+			ok(Req, "This is actually a 404 message.")
 	end,
 	ok.
 
