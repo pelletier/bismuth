@@ -5,7 +5,6 @@
 
 rpc_call(Mod, Fun, Args) -> rpc:call(rabbit_node(), Mod, Fun, Args, ?RPC_TIMEOUT).
 
-
 % Grab the rabbit node name from the configuration file
 rabbit_node() ->
 	io:format("get the config info~n"),

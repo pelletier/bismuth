@@ -1,7 +1,7 @@
 -module(bismuth_config).
 -include("bismuth.hrl").
-
 -export([get/1]).
+
 
 % Public %
 get(Key) ->

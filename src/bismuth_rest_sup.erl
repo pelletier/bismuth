@@ -2,6 +2,7 @@
 -behavior(supervisor).
 -export([start_link/1, init/1, stop/1]).
 
+
 start_link(Args) ->
 	io:format("Starting rest server supervisor.~n"),
 	supervisor:start_link({local, ?MODULE}, ?MODULE, Args).

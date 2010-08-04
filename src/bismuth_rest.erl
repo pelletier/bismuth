@@ -8,6 +8,7 @@
 -define(LOOP, {?MODULE, loop}).
 -define(DEFAULT_VHOST, <<"/">>).
 
+
 %
 % URI
 % /[vhost]/
@@ -45,9 +46,13 @@ loop(Req) ->
 	
 	case Tokens of
 		["queues" | RestOfPath] ->
-			ok(Req, "/queues"),
 			R = bismuth_rabbit:rpc_call(rabbit_amqqueue, info_all, [Vhost]),
-			io:format("Returns of rpc_call: ~p~n", [R]);
+			io:format("response !~n"),
+			Result = bismuth_utils:normalize(R, [pid]),
+			io:format("Result: ~p~n", [Result]),
+			DataOut = mochijson2:encode(Result),
+			io:format("mochied~n"),
+			ok(Req, DataOut);
 		_ ->
 			ok(Req, "other")
 	end,
