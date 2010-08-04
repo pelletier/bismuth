@@ -3,8 +3,10 @@
 
 -module(bismuth_app).
 -behavior(application).
--export([start/2, stop/1]).
+-export([start/2, stop/1, boot/0]).
 
+boot() ->
+	application:start(bismuth).
 
 % Just call the supervsior and start a new bismuth instance.
 start(Type, Args) ->

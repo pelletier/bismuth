@@ -4,10 +4,7 @@ ERL = erl
 mochi:
 	cd deps/mochiweb; $(MAKE)
 
-json:
-	cd deps/rfc4627; $(MAKE)
-
-bismuth: mochi json
+bismuth: mochi
 	$(EMAKE) Emakefile
 
 all: bismuth
@@ -19,4 +16,7 @@ boot:
 	cd ebin; $(ERL) -pa ./ebin/ -noshell -run make_boot write_scripts bismuth
 
 start: bismuth
-	$(ERL) -pa ./ebin -pa ./deps/*/ebin -name bismuth -s reloader -sname bismuth@MacBookPro-Thomas -boot start_sasl
+	$(ERL) -pa ./ebin -pa ./deps/*/ebin -name bismuth -s bismuth_app boot -sname bismuth@MacBookPro-Thomas -boot start_sasl
+
+silent: bismuth
+	$(ERL) -pa ./ebin -pa ./deps/*/ebin -name bismuth -s bismuth_app boot -sname bismuth@MacBookPro-Thomas -boot start_sasl -detached

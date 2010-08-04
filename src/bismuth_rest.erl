@@ -1,7 +1,7 @@
 -module(bismuth_rest).
 -behavior(gen_server).
 -include("bismuth.hrl").
--export([start_link/1]).
+-export([start_link/1, ok/2]).
 -export([code_change/3, handle_call/3, handle_cast/2, handle_info/2, init/1, terminate/2]).
 -record(state, {}).
 -define(SERVER, ?MODULE). % For coherence.
@@ -20,7 +20,8 @@ start_link(Args) ->
 
 init(_Args) ->
 	io:format("Starting mochiweb...~n"),
-	mochiweb_http:start([{loop, fun loop/1}, {port, 4242}]),
+	{ok, Port} = bismuth_config:get(port),
+	mochiweb_http:start([{loop, fun loop/1}, {port, Port}]),
 	io:format("Rest server initalized.~n"),
 	{ok, #state{}}.
 
@@ -45,14 +46,8 @@ loop(Req) ->
 	io:format("Endif~n"),
 	
 	case Tokens of
-		["queues" | RestOfPath] ->
-			R = bismuth_rabbit:rpc_call(rabbit_amqqueue, info_all, [Vhost]),
-			io:format("response !~n"),
-			Result = bismuth_utils:normalize(R, [pid]),
-			io:format("Result: ~p~n", [Result]),
-			DataOut = mochijson2:encode(Result),
-			io:format("mochied~n"),
-			ok(Req, DataOut);
+		[ViewName | RestOfPath] ->
+			apply(bismuth_views, list_to_atom(ViewName), [Req, Vhost, RestOfPath]);
 		_ ->
 			ok(Req, "other")
 	end,
@@ -60,7 +55,7 @@ loop(Req) ->
 
 % This is how we return HTTP Response
 ok(Req, Response) ->
-	Req:ok({_ContentType = "text/plain", _Headers = [], Response}).
+	Req:ok({_ContentType = "application/json", _Headers = [], Response}).
 
 ok(Req, Response, Ctype) ->
 	Req:ok({_ContentType = Ctype, _Headers = [], Response}).
