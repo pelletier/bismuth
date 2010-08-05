@@ -4,16 +4,12 @@
 
 % Returns only the elements of the lists which contains a pair (Key, Value).
 filter_only(List, Key, Value) ->
-	io:format("Hello~n"),
 	case in_filter(List, Key, Value, []) of
 		[] ->
-			io:format("Nothing found~n"),
 			{error, not_found};
 		[OneResult] ->
-			io:format("One Result~n"),
 			OneResult;
 		ResultsList when is_list(ResultsList) ->
-			io:format("Multiple Results~n"),
 			ResultsList;
 		_ ->
 			{error, internal_problem}
@@ -21,13 +17,9 @@ filter_only(List, Key, Value) ->
 in_filter([], _Key, _Value, Results) ->
 	Results;
 in_filter([Item|Tail], Key, Value, Results) ->
-	io:format("Value; ~p~n", [Value]),
-	io:format("Item: ~p~n", [Item]),
 	case bismuth_config:in_get(Key, Item) of
 		{ok, Value} ->
-			io:format("before append~n"),
 			Results2 = lists:append(Results, Item),
-			io:format("Sounds good~n");
 		_ ->
 			Results2 = Results
 	end,
@@ -39,7 +31,6 @@ as_dict([], _Key) ->
 	[];
 as_dict([Item|List], Key)->
  	{ok, Value} = bismuth_config:in_get(Key, Item),
-	io:format("VALUE ~p~n", [Value]),
 	lists:append([{list_to_atom(binary_to_list(Value)), Item}], as_dict(List, Key)).
 	
 
@@ -74,13 +65,11 @@ chunk(List) ->
 normalize(L) ->
 	normalize(L, [], []).
 normalize(L, Blacklist) ->
-	io:format("NORMALIZE: ~p~n", [L]),
 	normalize(L, Blacklist, []).
 normalize([], _Blacklist, Result) ->
 	Result;
 normalize([Head|Tail], Blacklist, Result) ->
 	Changed = in_normalize(Head, Blacklist),
-	io:format("____> ~p~n", [Changed]),
 	normalize(Tail, Blacklist, [Changed|Result]).
 
 in_normalize([], _Blacklist) ->

@@ -8,7 +8,7 @@ start_link(Args) ->
 	supervisor:start_link({local, ?MODULE}, ?MODULE, Args).
 
 init(Args) ->
-	io:format("Rest server supervisor initd.~n"),
+	io:format("Rest server supervisor initialized.~n"),
 	{ok, {{one_for_one, 2, 10}, [{rest_server, {bismuth_rest, start_link, [Args]}, permanent, 2000, worker, [bismuth_rest]}]}}.
 
 stop(_Args) ->

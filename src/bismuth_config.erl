@@ -9,9 +9,7 @@ get(Key) ->
 
 % Private %
 grab_cfg() ->
-	io:format("Grab CFG~n"),
 	{ok, Configfilepath} = application:get_env(?APPNAME, config_path),
-	io:format("End get env: ~p~n", [Configfilepath]),
 	Data = case file:consult(Configfilepath) of
 		{ok, Val} ->
 			Val;
@@ -19,7 +17,6 @@ grab_cfg() ->
 			io:format("The file at ~p does not exist or is not readable!~n", [Configfilepath]),
 			[]
 	end,
-	io:format("End consult: ~p~n", [Data]),
 	Data.
 		
 in_get(_Key, []) ->

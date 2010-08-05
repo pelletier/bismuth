@@ -11,9 +11,7 @@ start(Type, Args)->
 	supervisor:start_link(?MODULE, [Type, Args]).
 
 init([_Type, Args]) ->
-	io:format("Starting module ~p with args ~p.~n", [?MODULE, Args]),
 	RestServerSupervisor = {bismuth_rest_sup, {bismuth_rest_sup, start_link, [Args]}, permanent, 2000, worker, []},
-	io:format("RestServer built. Registering on OTP.~n"),
 	{ok, {_SupFlags = {one_for_one, ?MAXIMUM_RESTARTS, ?MAX_DELAY_TIME}, [RestServerSupervisor]}}.
 
 stop(Args) ->
