@@ -35,7 +35,6 @@ loop(Req) ->
 			?DEFAULT_VHOST
 	end,
 	Tokens = string:tokens(Path, "/"),
-	Command = Tokens,
 	io:format("VHost: ~p~n", [Vhost]),
 	case Tokens of
 		[ViewName | RestOfPath] ->

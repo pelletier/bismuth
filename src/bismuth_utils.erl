@@ -19,7 +19,7 @@ in_filter([], _Key, _Value, Results) ->
 in_filter([Item|Tail], Key, Value, Results) ->
 	case bismuth_config:in_get(Key, Item) of
 		{ok, Value} ->
-			Results2 = lists:append(Results, Item),
+			Results2 = lists:append(Results, Item);
 		_ ->
 			Results2 = Results
 	end,
