@@ -47,7 +47,15 @@ loop(Req) ->
 
 % This is how we return HTTP Response
 ok(Req, Response) ->
-	Req:ok({_ContentType = "application/json", _Headers = [], Response}).
+	QueryString = Req:parse_qs(),
+	case bismuth_config:in_get("callback", QueryString) of
+		{ok, Callback} ->
+			FinalResponse = io_lib:format("~p(~s);", [list_to_atom(Callback), Response]);
+		_ ->
+			FinalResponse = Response
+	end,
+	
+	Req:ok({_ContentType = "application/json", _Headers = [], FinalResponse}).
 
 ok(Req, Response, Ctype) ->
 	Req:ok({_ContentType = Ctype, _Headers = [], Response}).

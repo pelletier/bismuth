@@ -32,4 +32,6 @@ You can always provide the following `GET` parameters:
 <dl>
     <dt>vhost</dt>
     <dd>The vhost you want to query. Default is /.</dd>
+    <dt>callback</dt>
+    <dd>The callback for JSONP calls.</dd>
 </dl>
