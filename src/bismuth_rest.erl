@@ -28,21 +28,21 @@ init(_Args) ->
 % Dispatching HTTP requests
 loop(Req) ->
 	Path = Req:get(path),
+	QueryString = Req:parse_qs(),
+	io:format("QueryString = ~p~n", [QueryString]),
+	Vhost = case bismuth_config:in_get("vhost", QueryString) of
+		{ok, V} ->
+			V;
+		{error, _Blah} ->
+			?DEFAULT_VHOST
+	end,
 	Tokens = string:tokens(Path, "/"),
 	io:format("restarting loop normally in ~p~n", [Path]),
-	Size = length(Tokens),
-	if
-		Size>1 ->
-			% A vhost name has been provided
-			[<<Vhost>>|Command] = Tokens;
-		true ->
-			% Use the default instead
-			Vhost = ?DEFAULT_VHOST,
-			Command = Tokens
-	end,
-	
+	Command = Tokens,
+	io:format("VHOST: ~p~n", [Vhost]),
 	case Tokens of
 		[ViewName | RestOfPath] ->
+			io:format("~p // ~p", [ViewName, RestOfPath]),
 			apply(bismuth_views, list_to_atom(ViewName), [Req, Vhost, RestOfPath]);
 		_ ->
 			ok(Req, "This is actually a 404 message.")
@@ -75,4 +75,5 @@ terminate(_Reason, _State) ->
 	ok.
 
 code_change(_OldVsn, State, _Extra) ->
+	io:format("Code changed, oh yeah!"),
 	{ok, State}.
