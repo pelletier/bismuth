@@ -1,7 +1,6 @@
 # Compile & use
 
- 1. Edit config.cfg to fit your needs.
- 2. Run!
+Edit config.cfg to fit your needs, then run!
 
     $ make start
 
