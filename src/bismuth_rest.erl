@@ -39,7 +39,16 @@ loop(Req) ->
 	case Tokens of
 		[ViewName | RestOfPath] ->
 			io:format("Call: ~p // ~p~n", [ViewName, RestOfPath]),
-			apply(bismuth_views, list_to_atom(ViewName), [Req, Vhost, RestOfPath]);
+			case get(ViewName) == undefined of
+                	    true ->
+                    		put(ViewName, list_to_atom(ViewName));
+			    false ->
+				nothing
+			end,
+            		AtomViewName = get(ViewName),
+				apply(bismuth_views, AtomViewName, [Req, Vhost, RestOfPath]);
+                      
+
 		_ ->
 			ok(Req, "This is actually a 404 message.")
 	end,
@@ -50,7 +59,15 @@ ok(Req, Response) ->
 	QueryString = Req:parse_qs(),
 	case bismuth_config:in_get("callback", QueryString) of
 		{ok, Callback} ->
-			FinalResponse = io_lib:format("~p(~s);", [list_to_atom(Callback), Response]);
+	            	case get(Callback) == undefined of
+               	   		true ->
+                   		 	put(Callback, list_to_atom(Callback));
+				false ->
+					nothing
+            		end,
+            	    
+			AtomCallback = get(Callback),
+			FinalResponse = io_lib:format("~p(~s);", [AtomCallback, Response]);
 		_ ->
 			FinalResponse = Response
 	end,
@@ -81,3 +98,4 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
 	io:format("Code changed, oh yeah!"),
 	{ok, State}.
+
